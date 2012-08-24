@@ -1,0 +1,50 @@
+
+# recursive test
+
+# main									#0
+# {
+# 	write (func 11);					#1
+# }
+# 
+# func x								#2
+# {
+# 	if x {								#3
+# 		return x + func(x-1);			#4
+# 	}
+# 	else return 0;						#5
+# }										#6
+
+
+@#0
+	push
+	push	11
+	go		2, 1
+
+@#1
+	pop
+	write
+	exit
+
+@#2
+	push	[1]
+	if		3, 5, 6
+
+@#3
+	push	[2]
+	push
+	push	[4]
+	push	1
+	sub
+	go		2, 4
+
+@#4
+	pop
+	add
+	pop		[3]
+
+@#5
+	push	0
+	pop		[3]
+
+@#6
+

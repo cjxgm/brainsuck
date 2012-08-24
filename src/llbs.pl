@@ -74,10 +74,6 @@ while (<STDIN>) {
 			last;
 		};
 
-		/^if$/ and do {
-			last;
-		};
-
 		/^go$/ and do {
 			if (@p == 0) {
 				die "[$line_no] parameter expected\n";
@@ -92,6 +88,30 @@ while (<STDIN>) {
 			elsif (@p == 2) {
 				if ($p[0] =~ /^[0-9]+$/ && $p[1] =~ /^[0-9]+$/) {
 					print "\t>" . "+"x$p[1] . ">" . "+"x$p[0] . "\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
+			last;
+		};
+
+		/^if$/ and do {
+			if (@p == 0) {
+				die "[$line_no] parameter expected\n";
+			}
+			elsif (@p == 2) {
+				if ($p[0] =~ /^[0-9]+$/ && $p[1] =~ /^[0-9]+$/) {
+					print "\t[[-]>+<]+>[-<-" . "+"x$p[1] . ">" .
+						"+"x$p[0] . ">>]<[-" . "+"x$p[1] . ">]<\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			elsif (@p == 3) {
+				if ($p[0] =~ /^[0-9]+$/ && $p[1] =~ /^[0-9]+$/ &&
+						$p[2] =~ /^[0-9]+$/) {
+					print "\t[[-]>+<]+>[-<-" . "+"x$p[2] . ">" .
+						"+"x$p[0] . ">>]<[-" . "+"x$p[2] . ">" .
+						"+"x$p[1] . ">]<\n";
 				}
 				else { die "[$line_no] invalid parameter: @p\n"; }
 			}
@@ -114,6 +134,21 @@ while (<STDIN>) {
 				$_ = $p[0];
 				if (/^[0-9]+$/) {
 					print "\t" . "+"x$_ . "\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
+			last;
+		};
+
+		/^sub$/ and do {
+			if (@p == 0) {
+				print "\t[-<->]<\n";
+			}
+			elsif (@p == 1) {
+				$_ = $p[0];
+				if (/^[0-9]+$/) {
+					print "\t" . "-"x$_ . "\n";
 				}
 				else { die "[$line_no] invalid parameter: @p\n"; }
 			}
