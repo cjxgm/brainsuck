@@ -1,0 +1,9 @@
+
+# test program for llbs
+
+@#0
+	push	66
+	write
+	write	65
+	exit
+
