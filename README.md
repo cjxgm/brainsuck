@@ -1,6 +1,6 @@
 # brainsuck - painlessly brainfucking
-![bslogo](http://github.com/cjxgm/brainsuck/raw/master/image/bs.png "brainsuck")
-by eXerigumo Clanjor (哆啦比猫/兰威举), 2012.
+![bslogo](http://github.com/cjxgm/brainsuck/raw/master/image/bs.png "brainsuck")<hr>
+by eXerigumo Clanjor (哆啦比猫/兰威举), 2012.<br>
 Licensed under GPLv2.<br>
 *ALPHA*<br>
 
