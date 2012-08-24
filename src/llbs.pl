@@ -9,10 +9,13 @@
 
 
 my $func = 0;
+my $line_no = 0;
 
 print ">>>+[\n";
 
 while (<STDIN>) {
+	$line_no++;
+
 	s/#.*$//g;						# kill comments
 	s/[\t\n\r]+/ /g;				# kill tabs and returns
 	s/ +/ /g;						# uniq multiple spaces
@@ -43,22 +46,56 @@ while (<STDIN>) {
 			elsif (@p == 1) {
 				$_ = $p[0];
 				if (/^[0-9]+$/) {
-					print "\t>" . "+" x $_ . "\n";
+					print "\t>" . "+"x$_ . "\n";
 				}
+				elsif (($_) = /^\[([0-9]+)\]$/) {
+					print "\t" . "<"x$_ . "[-" . ">"x($_+1) .
+						"+>+" . "<"x($_+2) . "]" . ">"x($_+2) .
+						"[-" . "<"x($_+2) . "+" . ">"x($_+2) . "]<\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
 			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
 			last;
 		};
 
 		/^pop$/ and do {
-			print "\t[-]<\n";
-			last;
-		};
-
-		/^go$/ and do {
+			if (@p == 0) {
+				print "\t[-]<\n";
+			}
+			elsif (@p == 1) {
+				$_ = $p[0];
+				if (($_) = /^\[([0-9]+)\]$/) {
+					print "\t[-" . "<"x($_+1) . "+" . ">"x($_+1) . "]<\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
 			last;
 		};
 
 		/^if$/ and do {
+			last;
+		};
+
+		/^go$/ and do {
+			if (@p == 0) {
+				die "[$line_no] parameter expected\n";
+			}
+			elsif (@p == 1) {
+				$_ = $p[0];
+				if (/^[0-9]+$/) {
+					print "\t>" . "+"x$_ . "\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			elsif (@p == 2) {
+				if ($p[0] =~ /^[0-9]+$/ && $p[1] =~ /^[0-9]+$/) {
+					print "\t>" . "+"x$p[1] . ">" . "+"x$p[0] . "\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
 			last;
 		};
 
@@ -69,12 +106,27 @@ while (<STDIN>) {
 			last;
 		};
 
+		/^add$/ and do {
+			if (@p == 0) {
+				print "\t[-<+>]<\n";
+			}
+			elsif (@p == 1) {
+				$_ = $p[0];
+				if (/^[0-9]+$/) {
+					print "\t" . "+"x$_ . "\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
+			last;
+		};
+
 		/^exit$/ and do {
 			print "\t>>>+<<<\n";
 			last;
 		};
 
-		die "Unknown operator: $op\n";
+		die "[$line_no] unknown operator: $op\n";
 	}
 }
 

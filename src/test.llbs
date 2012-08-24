@@ -1,9 +1,34 @@
 
 # test program for llbs
 
+# main
+# {
+# 	write 65;
+# 	write (func 10);
+# }
+# 
+# func x
+# {
+# 	return x + 60;
+# }
+
+
 @#0
-	push	66
+	push	65
 	write
-	write	65
+
+	push
+	push	10
+	go		1, 2
+
+@#1
+	push	[1]
+	push	60
+	add
+	pop		[2]
+
+@#2
+	pop
+	write
 	exit
 
