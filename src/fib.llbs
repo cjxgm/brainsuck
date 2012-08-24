@@ -1,0 +1,101 @@
+
+# fibonacci
+
+# main									#0
+# {
+# 	@ n=6, i;
+# 	while n {							#1
+# 		i++;							#2
+# 		write ((fib i) + '0');			#3
+# 		n--;
+# 	}									#4
+# }
+# 
+# fib x									#5
+# {
+# 	if x!=1 && x!=2						#6
+# 		return (fib (x-1)) +			#7
+# 			(fib (x-2));				#8
+# 	else return 1						#9
+# }										#10
+
+
+@#0
+	push	1
+	push	0
+	go		1
+
+@#1
+	push	[1]
+	if		2, 4
+
+@#2
+	pop
+	push	[0]
+	push	1
+	add
+	pop		[0]
+
+	push
+	push	[1]
+	go		5, 3
+
+@#3
+	pop
+	push	'0'
+	add
+	write
+
+	push	[1]
+	push	1
+	sub
+	pop		[1]
+
+	go		1
+
+@#4
+	pop
+	pop
+	exit
+
+@#5
+	push	[1]
+	push	1
+	sub
+	bool
+	push	[2]
+	push	2
+	sub
+	bool
+	add
+	push	2
+	sub
+	bool
+	if		9, 6, 10
+
+@#6
+	push
+	push	[3]
+	push	1
+	sub
+	go		5, 7
+
+@#7
+	pop
+	push
+	push	[4]
+	push	2
+	sub
+	go		5, 8
+
+@#8
+	pop
+	add
+	pop		[3]
+
+@#9
+	push	1
+	pop		[3]
+
+@#10
+

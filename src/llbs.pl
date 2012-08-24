@@ -34,6 +34,7 @@ while (<STDIN>) {
 
 	for ($op) {
 		/^\@$/ and do {
+			if (@p) { die "[$line_no] invalid parameter: @p\n"; }
 			print "\t>->]<+[\n\n" if $func++;
 			print "\t<[->-]>[-<<\n";
 			last;
@@ -156,6 +157,12 @@ while (<STDIN>) {
 				else { die "[$line_no] invalid parameter: @p\n"; }
 			}
 			else { die "[$line_no] invalid parameter: @p\n"; }
+			last;
+		};
+
+		/^bool$/ and do {
+			if (@p) { die "[$line_no] invalid parameter: @p\n"; }
+			print "\t[[-]>+<]>[-<+>]<\n";
 			last;
 		};
 
