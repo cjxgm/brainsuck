@@ -1,0 +1,64 @@
+
+# spoj: TEST: 1. Life, the Universe, and Everything
+
+
+# main										#0
+# {
+# 	@ x, y;
+# 	repeat {	# infinite loop				#1
+# 		x = read;
+# 		if x == '4' {						#2
+# 			y = read;
+# 			if y == '2' exit;				#3
+# 			else {							#4
+# 				write x;
+# 				write y;
+# 			}								#5
+# 		}
+# 		else write x;						#6
+# 	}										#7
+# }
+
+
+@#0
+	push
+	push
+	go		1
+
+@#1
+	read
+	pop		[1]
+
+	push	[1]
+	push	'4'
+	sub
+	if		6, 2, 7
+
+@#2
+	read
+	pop		[1]
+
+	push	[1]
+	push	'2'
+	sub
+	if		4, 3, 5
+
+@#3
+	exit
+
+@#4
+	push	[3]
+	write
+
+	push	[2]
+	write
+
+@#5
+
+@#6
+	push	[2]
+	write
+
+@#7
+	go		1
+

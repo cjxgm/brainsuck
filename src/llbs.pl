@@ -124,6 +124,11 @@ while (<STDIN>) {
 			last;
 		};
 
+		/^read$/ and do {
+			print "\t>,\n";
+			last;
+		};
+
 		/^write$/ and do {
 			print "\t";
 			print ">" . "+" x $p[0] if $p[0] =~ /[0-9]+/;
