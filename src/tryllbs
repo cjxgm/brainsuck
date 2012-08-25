@@ -1,0 +1,8 @@
+#!/bin/bash
+./llbs.pl < $1.llbs | bf2nasm > /tmp/llbs
+nasm -f elf32 -o /tmp/llbs.o /tmp/llbs
+ld -o /tmp/llbs /tmp/llbs.o
+rm -f /tmp/llbs.o
+/tmp/llbs
+rm -f /tmp/llbs
+

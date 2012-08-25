@@ -21,7 +21,7 @@
 
 
 @#0
-	push	1
+	push	6
 	push	0
 	go		1
 
@@ -44,6 +44,9 @@
 	pop
 	push	'0'
 	add
+	write
+
+	push	10
 	write
 
 	push	[1]
