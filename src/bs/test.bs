@@ -1,0 +1,21 @@
+#kja sdjkasdj sd
+
+main(a, b)
+{
+	;
+	;
+	break;		# test comment
+	;
+	exit;
+	;
+	;
+	;
+}
+
+main2()
+{
+	break;
+	"test";		# output string
+	break;
+}
+
