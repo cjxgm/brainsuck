@@ -418,7 +418,44 @@ sub bs_block
 
 sub bs_expr
 {
-	&bs_factor;
+	my $p = &bs_equality_expr;
+
+	while (match('SYM', '&&') || match('SYM', '||')) {
+		my %p = (type => $tk{name}, a => $p);
+		&advance;
+		$p{b} = &bs_equality_expr;
+		$p = \%p;
+	}
+
+	$p;
+}
+
+sub bs_equality_expr
+{
+	my $p = &bs_arithmetric_expr;
+
+	while (match('SYM', '==') || match('SYM', '!=')) {
+		my %p = (type => $tk{name}, a => $p);
+		&advance;
+		$p{b} = &bs_arithmetric_expr;
+		$p = \%p;
+	}
+
+	$p;
+}
+
+sub bs_arithmetric_expr
+{
+	my $p = &bs_factor;
+
+	while (match('SYM', '+') || match('SYM', '-')) {
+		my %p = (type => $tk{name}, a => $p);
+		&advance;
+		$p{b} = &bs_factor;
+		$p = \%p;
+	}
+
+	$p;
 }
 
 sub bs_factor
@@ -616,7 +653,6 @@ sub do_gen_code
 
 			do_gen_code($p{cond});
 			gen("if\t$then, " . ($else ? "$else, " : "") . "$end");
-			$var_offset--;
 
 			$fcurrent = $then;
 			do_gen_code($p{then});
@@ -627,6 +663,7 @@ sub do_gen_code
 			};
 
 			$fcurrent = $end;
+			$var_offset--;
 			last;
 		};
 
@@ -680,6 +717,56 @@ sub do_gen_code
 		/^!$/ and do {
 			do_gen_code($p{expr});
 			gen("not");
+			last;
+		};
+
+		/^\+$/ and do {
+			do_gen_code($p{a});
+			do_gen_code($p{b});
+			&gen_add;
+			last;
+		};
+
+		/^-$/ and do {
+			do_gen_code($p{a});
+			do_gen_code($p{b});
+			&gen_sub;
+			last;
+		};
+
+		/^==$/ and do {
+			do_gen_code($p{a});
+			do_gen_code($p{b});
+			&gen_sub;
+			gen("not");
+			last;
+		};
+
+		/^!=$/ and do {
+			do_gen_code($p{a});
+			do_gen_code($p{b});
+			&gen_sub;
+			last;
+		};
+
+		/^&&$/ and do {
+			gen_push(2);
+			do_gen_code($p{a});
+			gen("bool");
+			do_gen_code($p{b});
+			gen("bool");
+			&gen_add;
+			&gen_sub;
+			gen("not");
+			last;
+		};
+
+		/^\|\|$/ and do {
+			do_gen_code($p{a});
+			gen("bool");
+			do_gen_code($p{b});
+			gen("bool");
+			&gen_add;
 			last;
 		};
 

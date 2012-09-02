@@ -2,23 +2,17 @@
 
 main()
 {
-	@ n = 4;
-	while (n) {
-		putc(abc(n));
-		n--;
+	@ x;
+
+	while (x != 'x') {
+		"what? ";
+		x = getc();
+		while (x == 10 || x == 13) x = getc();	# skip newline
+
+		if (x == 'a') "Hi!";
+		else {"> "; putc(x);}
+		putc(10);	# newline
 	}
-	"press <ENTER> to quit...";
-
-	@ b = getc();
-	b -= 'x';
-	if (!b) "yes";
-	putc(10);
-}
-
-abc(x)
-{
-	x += '0';
-	return x;
 }
 
 
