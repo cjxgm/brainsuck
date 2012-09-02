@@ -6,7 +6,7 @@ Licensed under GPLv2.<br>
 
 # Have a try!
 
-## clone this repo and install
+## Clone this repo and install
 
 ```bash
 git clone https://github.com/cjxgm/brainsuck.git
