@@ -589,15 +589,37 @@ sub do_gen_code
 			my $end   = &alloc_func;
 
 			gen("go\t\t$while");
-			$fcurrent = $while;
 
+			$fcurrent = $while;
 			do_gen_code($p{cond});
 			gen("while\t$body, $end");
 			$var_offset--;
-			$fcurrent = $body;
 
+			$fcurrent = $body;
 			do_gen_code($p{body});
 			gen("go\t\t$while");
+
+			$fcurrent = $end;
+			last;
+		};
+
+		/^IF$/ and do {
+			my $then = &alloc_func;
+			my $else = &alloc_func if $p{else};
+			my $end  = &alloc_func;
+
+			do_gen_code($p{cond});
+			gen("if\t$then, " . ($else ? "$else, " : "") . "$end");
+			$var_offset--;
+
+			$fcurrent = $then;
+			do_gen_code($p{then});
+
+			$else and do {
+				$fcurrent = $else;
+				do_gen_code($p{else});
+			};
+
 			$fcurrent = $end;
 			last;
 		};
@@ -771,7 +793,7 @@ sub find_var
 		return $id + $var_offset + 1;
 	};
 
-	($id) = grep { $var_name[$_] eq $name } 0 .. $#param_name;
+	($id) = grep { $var_name[$_] eq $name } 0 .. $#var_name;
 	defined $id and return $var_offset - $var_id[$id];
 
 	-1;

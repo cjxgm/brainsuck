@@ -187,6 +187,12 @@ while (<STDIN>) {
 			last;
 		};
 
+		/^not$/ and do {
+			if (@p) { die "[$line_no] invalid parameter: @p\n"; }
+			print "\t[[-]>+<]+>[-<->]<\n";
+			last;
+		};
+
 		/^exit$/ and do {
 			print "\t>>>+<<<\n";
 			last;

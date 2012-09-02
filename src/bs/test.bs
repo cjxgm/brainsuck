@@ -8,7 +8,10 @@ main()
 		n--;
 	}
 	"press <ENTER> to quit...";
-	putc(getc());
+
+	@ b = getc();
+	b -= 'x';
+	if (!b) "yes";
 }
 
 abc(x)
