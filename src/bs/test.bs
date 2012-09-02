@@ -1,21 +1,14 @@
 #kja sdjkasdj sd
 
-main(a, b)
+main()
 {
-	;
-	;
-	break;		# test comment
-	;
-	exit;
-	;
-	;
-	;
+	putc(abc(4));
+	putc(getc());
 }
 
-main2()
+abc(a)
 {
-	break;
-	"test";		# output string
-	break;
+	a+='0';
+	return a;
 }
 

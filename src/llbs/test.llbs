@@ -6,16 +6,16 @@
 # {
 # 	@ x, y;
 # 	repeat {	# infinite loop				#1
-# 		x = read;
+# 		x = getc;
 # 		if x == '4' {						#2
-# 			y = read;
+# 			y = getc;
 # 			if y == '2' exit;				#3
 # 			else {							#4
-# 				write x;
-# 				write y;
+# 				putc x;
+# 				putc y;
 # 			}								#5
 # 		}
-# 		else write x;						#6
+# 		else putc x;						#6
 # 	}										#7
 # }
 
@@ -26,7 +26,7 @@
 	go		1
 
 @#1
-	read
+	getc
 	pop		[1]
 
 	push	[1]
@@ -35,7 +35,7 @@
 	if		6, 2, 7
 
 @#2
-	read
+	getc
 	pop		[1]
 
 	push	[1]
@@ -48,16 +48,16 @@
 
 @#4
 	push	[3]
-	write
+	putc
 
 	push	[2]
-	write
+	putc
 
 @#5
 
 @#6
 	push	[2]
-	write
+	putc
 
 @#7
 	go		1

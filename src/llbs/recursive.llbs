@@ -3,7 +3,7 @@
 
 # main									#0
 # {
-# 	write (func 11);					#1
+# 	putc (func 11);					#1
 # }
 # 
 # func x								#2
@@ -22,7 +22,7 @@
 
 @#1
 	pop
-	write
+	putc
 	exit
 
 @#2

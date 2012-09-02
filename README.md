@@ -25,7 +25,7 @@ main									#0
 	@ n=6, i;
 	while n {							#1
 		i++;							#2
-		write ((fib i) + '0');			#3
+		putc ((fib i) + '0');			#3
 		n--;
 	}									#4
 }
@@ -68,10 +68,10 @@ It will be compiled by `bs` into `llbs` code.
 	pop
 	push	'0'
 	add
-	write
+	putc
 
 	push	10
-	write
+	putc
 
 	push	[1]
 	push	1
