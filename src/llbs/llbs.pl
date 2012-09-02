@@ -124,6 +124,21 @@ while (<STDIN>) {
 			last;
 		};
 
+		/^while$/ and do {
+			if (@p == 0) {
+				die "[$line_no] parameter expected\n";
+			}
+			elsif (@p == 2) {
+				if ($p[0] =~ /^[0-9]+$/ && $p[1] =~ /^[0-9]+$/) {
+					print "\t[[-]>+<]+>[-<-" . "+"x$p[0] .
+						">>]<[-" . "+"x$p[1] . ">]<\n";
+				}
+				else { die "[$line_no] invalid parameter: @p\n"; }
+			}
+			else { die "[$line_no] invalid parameter: @p\n"; }
+			last;
+		};
+
 		/^getc$/ and do {
 			print "\t>,\n";
 			last;

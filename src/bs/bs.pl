@@ -28,7 +28,7 @@ my @dsymbols = qw(++ -- += -= == != >= <= && ||);
 # code generator
 my $fcurrent;
 my @funcs;
-my $var_offset;
+my $var_offset = 0;
 my @param_name;
 my @var_name;
 my @var_id;
@@ -257,6 +257,10 @@ sub bs_stmt
 		return \%p;
 	};
 
+	match('KEY', 'if')    and return &bs_if;
+	match('KEY', 'while') and return &bs_while;
+	match('SYM', '@')     and return &bs_var_decls;
+
 	match('STR') and do {
 		$p{type} = 'STRING';
 		$p{name} = $tk{name};
@@ -268,7 +272,6 @@ sub bs_stmt
 		return \%p;
 	};
 
-	match('SYM', '@') and return &bs_var_decls;
 
 	match('ID') and do {
 		&advance;
@@ -349,6 +352,66 @@ sub bs_assign
 	$p{expr} = &bs_expr;
 
 	\%p;
+}
+
+sub bs_if
+{
+	my %p = (type => 'IF', else => undef);
+	&advance;
+
+	match_or_die 'SYM', '(', "for if statement's condition";
+	&advance;
+
+	$p{cond} = &bs_expr;
+
+	match_or_die 'SYM', ')', "for if statement's condition";
+	&advance;
+
+	$p{then} = &bs_block;
+
+	match 'KEY', 'else' and do {
+		&advance;
+		$p{else} = &bs_block;
+	};
+
+	\%p;
+}
+
+sub bs_while
+{
+	my %p = (type => 'WHILE');
+	&advance;
+
+	match_or_die 'SYM', '(', "for if statement's condition";
+	&advance;
+
+	$p{cond} = &bs_expr;
+
+	match_or_die 'SYM', ')', "for if statement's condition";
+	&advance;
+
+	$p{body} = &bs_block;
+
+	\%p;
+}
+
+sub bs_block
+{
+	match 'SYM', '{' and do {
+		&advance;
+
+		my %p = (type => 'BLOCK');
+		my @p;
+		while (my $p = &bs_stmt) { push @p, $p }
+		$p{body} = \@p;
+
+		match_or_die 'SYM', '}';
+		&advance;
+
+		return \%p;
+	};
+
+	&bs_stmt;
 }
 
 sub bs_expr
@@ -461,16 +524,17 @@ sub do_gen_code
 			alloc_param("#");	# return value
 			foreach (@{$p{params}}) { alloc_param($_) }
 			foreach (@{$p{body}})   { do_gen_code($_) }
-			foreach (@var_id)       { gen("pop")      }
+			foreach (@var_id)       { gen_pop("")     }
 			$p{name} eq "main" and gen("exit");
 			last;
 		};
 
 		/^VAR$/ and do {
-			foreach (@{$p{decls}}) {
-				print STDERR "> $$_{name}\t$$_{value}\n";
-				alloc_var($$_{name});
-				if ($$_{value}) { do_gen_code($$_{value}) }
+			foreach my $d (@{$p{decls}}) {
+				print STDERR "> $$d{name}\t$$d{value}\n";
+				if ($$d{value}) { do_gen_code($$d{value}) }
+				else { gen_push("") }
+				alloc_var($$d{name});
 			}
 			last;
 		};
@@ -519,6 +583,30 @@ sub do_gen_code
 			last;
 		};
 
+		/^WHILE$/ and do {
+			my $while = &alloc_func;
+			my $body  = &alloc_func;
+			my $end   = &alloc_func;
+
+			gen("go\t\t$while");
+			$fcurrent = $while;
+
+			do_gen_code($p{cond});
+			gen("while\t$body, $end");
+			$var_offset--;
+			$fcurrent = $body;
+
+			do_gen_code($p{body});
+			gen("go\t\t$while");
+			$fcurrent = $end;
+			last;
+		};
+
+		/^BLOCK$/ and do {
+			foreach (@{$p{body}}) { do_gen_code($_) }
+			last;
+		};
+
 		/^EXPR$/ and do {
 			do_gen_code($p{expr});
 			gen_pop("");
@@ -534,7 +622,7 @@ sub do_gen_code
 		/^\+=$/ and do {
 			gen_push($p{name});
 			do_gen_code($p{expr});
-			gen("add");
+			&gen_add;
 			gen_pop($p{name});
 			last;
 		};
@@ -542,7 +630,7 @@ sub do_gen_code
 		/^-=$/ and do {
 			gen_push($p{name});
 			do_gen_code($p{expr});
-			gen("sub");
+			&gen_sub;
 			gen_pop($p{name});
 			last;
 		};
@@ -597,7 +685,7 @@ sub do_gen_code
 
 		/^STRING$/ and do {
 			$_ = $p{name};
-			while (s/^(.)//g) { gen("write\t" . ord $1) }
+			while (s/^(.)//g) { gen("putc\t" . ord $1) }
 			last;
 		};
 	}
@@ -636,6 +724,18 @@ sub gen_pop
 	else { gen "pop" }
 }
 
+sub gen_add
+{
+	gen("add");
+	$var_offset--;
+}
+
+sub gen_sub
+{
+	gen("sub");
+	$var_offset--;
+}
+
 sub find_func
 {
 	my $name = shift;
@@ -668,12 +768,11 @@ sub find_var
 
 	$name ~~ @param_name and do {
 		($id) = grep { $param_name[$_] eq $name } 0 .. $#param_name;
-		print STDERR ":::: $id  $var_offset\n";
 		return $id + $var_offset + 1;
 	};
 
 	($id) = grep { $var_name[$_] eq $name } 0 .. $#param_name;
-	defined $id and return $var_offset - $id;
+	defined $id and return $var_offset - $var_id[$id];
 
 	-1;
 }

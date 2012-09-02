@@ -1,14 +1,19 @@
-#kja sdjkasdj sd
+# test
 
 main()
 {
-	putc(abc(4));
+	@ n = 4;
+	while (n) {
+		putc(abc(n));
+		n--;
+	}
+	"press <ENTER> to quit...";
 	putc(getc());
 }
 
-abc(a)
+abc(x)
 {
-	a+='0';
-	return a;
+	x += '0';
+	return x;
 }
 
