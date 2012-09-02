@@ -12,6 +12,7 @@ main()
 	@ b = getc();
 	b -= 'x';
 	if (!b) "yes";
+	putc(10);
 }
 
 abc(x)
@@ -19,4 +20,5 @@ abc(x)
 	x += '0';
 	return x;
 }
+
 

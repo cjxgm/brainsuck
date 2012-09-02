@@ -32,6 +32,8 @@ my $var_offset = 0;
 my @param_name;
 my @var_name;
 my @var_id;
+my $loop_start;
+my $loop_end;
 
 ############################################################
 #
@@ -587,6 +589,8 @@ sub do_gen_code
 			my $while = &alloc_func;
 			my $body  = &alloc_func;
 			my $end   = &alloc_func;
+			$loop_start = $while;
+			$loop_end   = $end;
 
 			gen("go\t\t$while");
 
@@ -600,6 +604,8 @@ sub do_gen_code
 			gen("go\t\t$while");
 
 			$fcurrent = $end;
+			$loop_start = undef;
+			$loop_end   = undef;
 			last;
 		};
 
@@ -691,11 +697,17 @@ sub do_gen_code
 
 		/^BREAK$/ and do {
 			print STDERR "> $p{type}\n";
+			$loop_end or die "cannot break outside a loop.\n";
+			gen("go\t\t$loop_end");
+			$fcurrent = &alloc_func;
 			last;
 		};
 
 		/^CONTINUE$/ and do {
 			print STDERR "> $p{type}\n";
+			$loop_start or die "cannot continue outside a loop.\n";
+			gen("go\t\t$loop_start");
+			$fcurrent = &alloc_func;
 			last;
 		};
 
