@@ -10,6 +10,7 @@ main()
 		while (x == 10 || x == 13) x = getc();	# skip newline
 
 		if (x == 'a') "Hi!";
+		else if (x-'0' == 2) "Wow!";
 		else {"> "; putc(x);}
 		putc(10);	# newline
 	}
